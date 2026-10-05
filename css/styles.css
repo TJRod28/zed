@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap');
+
+/* ==========================
+   1. RESET
+   ========================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ==========================
+   2. DESIGN TOKENS
+   ========================== */
+
+/* ==========================
+   3. BASE ELEMENT STYLES
+   ========================== */
+   
+/* ==========================
+   4. LAYOUT
+   (CSS variables cannot be used inside @media conditions,
+    so breakpoints are documented here instead of tokenized.)
+   ========================== */
+
+/* ==========================
+   5. HEADER 
+   ========================== */
+
+/* ==========================
+   6. SECTIONS
+   ========================== */
+
+/* ==========================
+   7. FORMS
+   ========================== */
+   
+/* ==========================
+   8. BUTTONS
+   ========================== */
+
+   /* ==========================
+   9. SEARCH
+   ========================== */
+
+   /* ==========================
+   10. CARDS
+   ========================== */
+
+/* ==========================
+   11. FOOTER
+   ========================== */
+
+   /* ==========================
+   12. RESPONSIVE
+   ========================== */
+@media (min-width: 768px) {
+    .favorites-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}

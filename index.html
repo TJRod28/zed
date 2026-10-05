@@ -1,12 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Zed</title>
-	<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel Rivals Stats Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <script src="js/app.js" defer></script>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+<header>
+    <div class="header-text">
+        <h1>Marvel Rivals Stats Tracker</h1>
+        <p>Log your stats after each match and review your history. Everything is saved in your browser's local storage.</p>
+    </div>
+    <button type="button" id="theme-toggle" class="btn-secondary" aria-pressed="false">Dark mode</button>
+</header>
+
+<main id="main">
+    <!-- 1. ADD A MATCH: the core feature -->
+    <section class="add-section panel">
+        <h2>Log a Match</h2>
+        <form id="add-match-form">
+
+            <fieldset>
+                <legend>Match info</legend>
+                <div class="form-grid form-grid-two">
+                    <div class="form-group">
+                        <label for="role">Role *</label>
+                        <select id="role" name="role" required aria-required="true">
+                            <option value="">Choose a role</option>
+                            <option value="vanguard">Vanguard</option>
+                            <option value="duelist">Duelist</option>
+                            <option value="strategist">Strategist</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hero">Hero (optional)</label>
+                        <input type="text" id="hero" name="hero">
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Stats</legend>
+                <p class="form-hint">Copy these from the scoreboard at the end of your match.</p>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="kills">Kills *</label>
+                        <input type="number" id="kills" name="kills" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deaths">Deaths *</label>
+                        <input type="number" id="deaths" name="deaths" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accuracy">Accuracy % *</label>
+                        <input type="number" id="accuracy" name="accuracy" min="0" max="100" step="0.1" inputmode="decimal" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="damage-dealt">Damage dealt *</label>
+                        <input type="number" id="damage-dealt" name="damage-dealt" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="damage-taken">Damage taken *</label>
+                        <input type="number" id="damage-taken" name="damage-taken" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="healing">Healing done *</label>
+                        <input type="number" id="healing" name="healing" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn-primary">Add Match</button>
+        </form>
+    </section>
+
+    <!-- 2. FIND MATCHES: search and filter (same idea as Project 2) -->
+    <section class="controls-section">
+        <div class="form-grid form-grid-two">
+            <div class="form-group">
+                <label for="search-input">Search by hero</label>
+                <input type="search" id="search-input" placeholder="e.g. Magneto">
+            </div>
+
+            <div class="form-group">
+                <label for="role-filter">Filter by role</label>
+                <select id="role-filter">
+                    <option value="all">All roles</option>
+                    <option value="vanguard">Vanguard</option>
+                    <option value="duelist">Duelist</option>
+                    <option value="strategist">Strategist</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. MATCH HISTORY: count, actions, and the table -->
+    <section class="history-section">
+        <h2>Match History</h2>
+        <p id="match-count" class="match-count"></p>
+
+        <div class="clear-all-container">
+            <button type="button" id="export-btn" class="btn-primary" disabled>Export to CSV</button>
+            <button type="button" class="btn-danger" onclick="clearAll()">Clear All Matches</button>
+        </div>
+
+        <p id="empty-message" class="empty-message"></p>
+
+        <div class="table-wrapper" tabindex="0" aria-labelledby="table-caption">
+            <table class="match-table">
+                <caption id="table-caption">Your logged matches, newest first</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Hero</th>
+                        <th scope="col">Kills</th>
+                        <th scope="col">Deaths</th>
+                        <th scope="col">Accuracy</th>
+                        <th scope="col">Damage dealt</th>
+                        <th scope="col">Damage taken</th>
+                        <th scope="col">Healing</th>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody id="match-body">
+                    <!-- rows are written by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2026 TJ Rodriguez · Fan-made tool, not affiliated with Marvel or NetEase</p>
+</footer>
+
+<script src="js/app.js"></script>
+
 </body>
 </html>

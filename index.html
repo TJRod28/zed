@@ -58,8 +58,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="accuracy">Accuracy % *</label>
-                        <input type="number" id="accuracy" name="accuracy" min="0" max="100" step="0.1" inputmode="decimal" required aria-required="true">
+                        <label for="assists">Assists *</label>
+                        <input type="number" id="assists" name="assists" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="final-hits">Final Hits *</label>
+                        <input type="number" id="final-hits" name="final-hits" min="0" step="1" inputmode="numeric" required aria-required="true">
                     </div>
 
                     <div class="form-group">
@@ -68,13 +73,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="damage-taken">Damage taken *</label>
+                        <label for="damage-taken">Damage taken/blocked *</label>
                         <input type="number" id="damage-taken" name="damage-taken" min="0" step="1" inputmode="numeric" required aria-required="true">
                     </div>
 
                     <div class="form-group">
                         <label for="healing">Healing done *</label>
                         <input type="number" id="healing" name="healing" min="0" step="1" inputmode="numeric" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accuracy">Accuracy % *</label>
+                        <input type="number" id="accuracy" name="accuracy" min="0" max="100" step="0.1" inputmode="decimal" required aria-required="true">
                     </div>
                 </div>
             </fieldset>
@@ -125,10 +135,12 @@
                         <th scope="col">Hero</th>
                         <th scope="col">Kills</th>
                         <th scope="col">Deaths</th>
-                        <th scope="col">Accuracy</th>
+                        <th scope="col">Assists</th>
+                        <th scope="col">Final hits</th>
                         <th scope="col">Damage dealt</th>
-                        <th scope="col">Damage taken</th>
+                        <th scope="col">Damage taken/blocked</th>
                         <th scope="col">Healing</th>
+                        <th scope="col">Accuracy</th>
                         <th scope="col"><span class="visually-hidden">Actions</span></th>
                     </tr>
                 </thead>

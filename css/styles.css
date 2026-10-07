@@ -115,6 +115,7 @@ body.theme-dark {
    4. LAYOUT
    Breakpoints used in this file:
      768px  — tablet and larger
+     1024px — laptop and larger
    (CSS variables cannot be used inside @media conditions,
     so breakpoints are documented here instead of tokenized.)
    ========================== */
@@ -380,9 +381,19 @@ footer {
    /* ==========================
    12. RESPONSIVE
    ========================== */
+/* 8 stat fields: 1 column on phones, 2 on tablets, 4 on laptops. 8 divides evenly by 2 and 4, and should not leave any remaining half empty rows. */
 @media (min-width: 768px) {
     .form-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .form-grid-two {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .form-grid {
+        grid-template-columns: repeat(4, 1fr);
     }
     .form-grid-two {
         grid-template-columns: repeat(2, 1fr);

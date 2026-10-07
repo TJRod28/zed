@@ -41,10 +41,12 @@ function addMatch(event) {
     // Form values are strings, so every stat is converted to a number.
     const kills = parseInt(document.getElementById("kills").value);
     const deaths = parseInt(document.getElementById("deaths").value);
-    const accuracy = parseFloat(document.getElementById("accuracy").value);
+    const assists = parseInt(document.getElementById("assists").value);
+    const finalHits = parseInt(document.getElementById("final-hits").value);
     const damageDealt = parseInt(document.getElementById("damage-dealt").value);
     const damageTaken = parseInt(document.getElementById("damage-taken").value);
     const healing = parseInt(document.getElementById("healing").value);
+    const accuracy = parseFloat(document.getElementById("accuracy").value);
 
     if (!role) {
         alert("Please choose a role.");
@@ -52,7 +54,7 @@ function addMatch(event) {
     }
 
     // isNaN catches an empty or unreadable box; < 0 catches negative numbers.
-    const stats = [kills, deaths, accuracy, damageDealt, damageTaken, healing];
+    const stats = [kills, deaths, assists, finalHits, damageDealt, damageTaken, healing, accuracy];
     for (let i = 0; i < stats.length; i++) {
         if (isNaN(stats[i]) || stats[i] < 0) {
             alert("Please enter every stat as a number of 0 or more.");
@@ -70,10 +72,12 @@ function addMatch(event) {
         hero: hero,
         kills: kills,
         deaths: deaths,
-        accuracy: accuracy,
+        assists: assists,
+        finalHits: finalHits,
         damageDealt: damageDealt,
         damageTaken: damageTaken,
         healing: healing,
+        accuracy: accuracy,
         dateAdded: new Date().toLocaleDateString()
     };
 
@@ -164,10 +168,12 @@ function searchMatches() {
             <td>${match.hero || "—"}</td>
             <td>${match.kills}</td>
             <td>${match.deaths}</td>
-            <td>${match.accuracy}%</td>
+            <td>${match.assists}</td>
+            <td>${match.finalHits}</td>
             <td>${match.damageDealt.toLocaleString()}</td>
             <td>${match.damageTaken.toLocaleString()}</td>
             <td>${match.healing.toLocaleString()}</td>
+            <td>${match.accuracy}%</td>
             <td><button type="button" class="btn-danger" onclick="deleteMatch(${index})">Delete</button></td>
         </tr>`;
     });
@@ -247,8 +253,8 @@ function exportCSV() {
     }
 
     // Row 1: the column headers.
-    const headers = ["Date", "Role", "Hero", "Kills", "Deaths", "Accuracy (%)",
-                     "Damage dealt", "Damage taken", "Healing"];
+    const headers = ["Date", "Role", "Hero", "Kills", "Deaths", "Assists", "Final hits",
+                     "Damage dealt", "Damage taken", "Healing", "Accuracy (%)"];
     const rows = [headers.map(csvCell).join(",")];
 
     // One row per match. Numbers are written plain (no commas like 12,400)
@@ -260,10 +266,12 @@ function exportCSV() {
             match.hero,
             match.kills,
             match.deaths,
-            match.accuracy,
+            match.assists,
+            match.finalHits,
             match.damageDealt,
             match.damageTaken,
-            match.healing
+            match.healing,
+            match.accuracy
         ];
         rows.push(cells.map(csvCell).join(","));
     });

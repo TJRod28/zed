@@ -22,3 +22,8 @@ It had me break my site by enetering wrong variables and searches to see if my e
 Originally, I thought I was finished with this project and was originally content with the finished product. I was ready to focus on my other major assignments due the same week this final project was due for this 8 week class. However, upon seeing my peer's websites and how different they were with fonts and colors and various flashes. 
 
 This made me begin to experience self-doubt at my then finished project and wanted to match everyone else with fancy styles and to even go beyond what they created. Thus, I went back to Claude to create a comic book style background, font, and MCU style introduction to the website. Now the last thing to do to fully complete this project is to add it to my project 1 portfolio and resize the images. 
+
+10/17/26
+After presenting Project Zed in class today, the only suggestions I received from my presentation was to include an import CSV file button so users can upload previously exported files to continue building their list of matches and how they can continue their growth. 
+
+This was something I completely did not know how to do, thus Claude really had to do all the havy lifting here because it seemed to involve more advancement than simply creating a blob function found in the export section. I am truly happy with the current results and also overheard the class enjoyed the little animations that are included in this project as the moving text captivated them right away. I firmly believe this project serves as testament to my new skills in coding and how to ethically use and consider the use of AI in my own personal or work projects.

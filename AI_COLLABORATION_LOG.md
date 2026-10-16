@@ -345,3 +345,55 @@ Three small fixes
 Skip link: it moved from -40px to -60px because a sliver of it was peeking out at the top-left corner.
 Intro title size: it’s slightly smaller and set to uppercase, so it fits on screen even before the font loads.
 Empty-message gap: .empty-message:empty { display: none; } removes the blank gap above the table when there’s no message to show."
+
+TJ: "Ok so for project Zed with the marvel rivals tracker the response I received in class today for our presentations was to add an input in addition to the output such as the professor describing a way to input data from a file so I do not know how that exactly would work so I need help on that. Additionally for the portfolio project in particular is there a way we can have the light and dark backgrounds be in some degree similar to the way my Undertale site (I know it says beta but I never renamed the folder but it was been finished since April 2026) has that cool black purple background. Now obliviously i don't want the font or any of that Undertale like stuff but the way the purples and black are coded for the dark mode and whatever that equilavant would be for the light mode?"
+
+Claude: "I’ll handle both. First I’ll pull your latest pushed versions of Zed and your portfolio from GitHub so I don’t overwrite anything you’ve changed since, and look at how your Undertale site builds its background.
+
+Zed now has the input your professor asked for: an Import CSV button that reads a file back into the tracker. Your portfolio now uses your Undertale site’s purple-and-black background in dark mode, with a lighter lavender version for light mode. I built both from your latest GitHub pushes, so your Helpful Tip line and the theme.js → app.js rename are kept.
+
+Zed: Import CSV
+
+Your export turns your matches into a file; the import does the reverse. Click Import CSV, pick a file, and the matches show up in your table.
+
+How it works, in four steps:
+
+Open the picker. The browser’s built-in file picker can’t be styled, so it’s hidden. Your styled button just clicks it for you.
+Read the file. FileReader reads the file’s text from your computer. It works like the event listeners you already use: "load" fires when it’s finished reading.
+Split it into cells. parseCSV is the reverse of your csvCell. It reads one letter at a time and keeps track of whether it’s inside quotes, so a comma inside "Cloak, Dagger" stays part of the name. That’s why a plain split(",") wouldn’t work.
+Check each row. rowToMatch turns a row back into a match and runs the same checks as your form: every stat is a number of 0 or more, and accuracy is 100 or less. Bad rows are skipped. A row that’s already in your list is skipped too, so importing the same file twice doesn’t double your matches.
+
+When it finishes, a message tells you how many matches were added and how many were skipped and why. Imported matches go after the ones you already had.
+
+I tested all of this:
+
+Round trip: export, clear everything, then import gives back exactly the same data.
+Duplicates: importing the same file twice adds nothing the second time.
+Wrong file: a CSV that isn’t a match export is refused with a clear message.
+Excel file: a file saved from Excel imports correctly, including a number written as 14,200.
+
+zed-sample-matches.csv has six example matches you can import during a presentation.
+
+The new code is section 9 in app.js. Start-up moved to section 10 so it stays last. You might also add a sentence about importing to your header paragraph, since right now it only mentions exporting.
+
+Portfolio: Undertale-style background
+
+I copied the recipe from your Undertale <body> CSS:
+
+a near-black base color,
+a TCU-purple glow pouring down from the top,
+a faint blue glow in the lower-left corner and a purple glow on the right,
+two very faint grid lines,
+background-attachment: fixed, so the glows stay in place while you scroll.
+
+Dark mode uses your Undertale values exactly. Cards are a deep purple-black, and links are a light purple.
+
+Light mode uses the same layers, but softer and on a pale lavender base, like a daytime version of the same cave.
+
+Each mode’s gradients are stored in a token called --bg-layers, the same token-swapping idea you use for dark-mode colors. The header also got the Undertale glowing purple line across its top. The fonts and other Undertale styling were left out, as you asked.
+
+Text contrast is at least 7.6:1 in both modes, well above the 4.5:1 requirement.
+
+One choice to confirm: I changed your light-mode accent from the indigo you picked in Lab 10.5 (
+#4338ca) to TCU purple (
+#4d1979) so it matches the Undertale glow. It’s even more readable, but if you’d rather keep your Lab 10.5 color, change that one line in section 2 and update the line in your README that mentions Lab 10.5."

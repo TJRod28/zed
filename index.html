@@ -9,6 +9,24 @@
 <body>
     <a href="#main" class="skip-link">Skip to content</a>
 
+    <!-- CINEMATIC INTRO: comic panels flash, then the title card lands.
+         Decoration only, so aria-hidden hides it from screen readers.
+         It is pure CSS (styles.css section 13) and never blocks clicks. -->
+    <div class="intro" aria-hidden="true">
+        <div class="intro-panels">
+            <span class="intro-panel"></span>
+            <span class="intro-panel"></span>
+            <span class="intro-panel"></span>
+            <span class="intro-panel"></span>
+            <span class="intro-panel"></span>
+            <span class="intro-panel"></span>
+        </div>
+        <p class="intro-title"><span>Marvel Rivals · Match Log</span>Stats Tracker</p>
+    </div>
+
+    <!-- THEME WIPE: a comic panel that sweeps across when the theme changes -->
+    <div id="theme-wipe" class="theme-wipe" aria-hidden="true"></div>
+
 <header>
     <div class="header-text">
         <h1>Marvel Rivals Stats Tracker</h1>
@@ -94,7 +112,7 @@
     </section>
 
     <!-- 2. FIND MATCHES: search and filter (same idea as Project 2) -->
-    <section class="controls-section">
+    <section class="controls-section panel">
         <div class="form-grid form-grid-two">
             <div class="form-group">
                 <label for="search-input">Search by hero</label>
@@ -114,7 +132,7 @@
     </section>
 
     <!-- 3. MATCH HISTORY: count, actions, and the table -->
-    <section class="history-section">
+    <section class="history-section panel">
         <h2>Match History</h2>
         <p id="match-count" class="match-count"></p>
 

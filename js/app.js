@@ -12,6 +12,7 @@ const searchInput = document.getElementById("search-input");
 const roleFilter = document.getElementById("role-filter");
 const themeToggle = document.getElementById("theme-toggle");
 const exportBtn = document.getElementById("export-btn");
+const themeWipe = document.getElementById("theme-wipe");
 
 // The <option> values are lowercase; this turns them into display names.
 const roleNames = {
@@ -28,6 +29,11 @@ searchInput.addEventListener("input", searchMatches);
 roleFilter.addEventListener("change", searchMatches);
 themeToggle.addEventListener("click", toggleTheme);
 exportBtn.addEventListener("click", exportCSV);
+
+// When the theme wipe finishes, remove its class so the next click can play it again.
+themeWipe.addEventListener("animationend", function() {
+    themeWipe.classList.remove("is-wiping");
+});
 
 // ==========================
 // 3. ADD A MATCH
@@ -86,6 +92,12 @@ function addMatch(event) {
     saveMatches();
     form.reset();
     displayMatches();
+
+    // The newest match is always the first row. Flash it so it's clear where it landed.
+    const newRow = matchBody.querySelector("tr");
+    if (newRow) {
+        newRow.classList.add("row-new");
+    }
 }
 
 // ==========================
@@ -204,6 +216,7 @@ function clearAll() {
 // 7. THEME (Lab 19 pattern, remembered after a refresh)
 // ==========================
 function toggleTheme() {
+    themeWipe.classList.add("is-wiping");   // play the comic panel sweep (CSS section 13)
     document.body.classList.toggle("theme-dark");
     const isDark = document.body.classList.contains("theme-dark");
     updateThemeButton(isDark);

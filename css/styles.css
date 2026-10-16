@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap');
 
 /* ==========================
    1. RESET
@@ -33,6 +33,13 @@ img {
     --color-surface: #ffffff;
     --color-surface-alt: #eceff6;
     --color-danger: #a8231b;
+    --color-ink: #141826;            /* comic "ink": panel outlines and hard shadows */
+    --color-flash: #fff1c2;          /* row hover and new-row flash */
+
+    /* Header title card (a gradient, so it swaps instead of fading) */
+    --header-bg: linear-gradient(120deg, #26135f 0%, #3a1f8f 55%, #5a2fc2 100%);
+    --color-on-header: #ffffff;
+    --color-on-header-muted: #e2dcff;
 
     /* Colors for roles (replaces the Project 2 category colors) */
     --color-vanguard: #1f4fbf;
@@ -48,18 +55,18 @@ img {
     /* Typography */
     --text-base: 1rem;
     --text-h3: 1.25rem;
-    --text-h2: 1.5rem;
-    --text-h1: 2.25rem;
+    --text-h2: 1.75rem;
+    --text-h1: clamp(2.25rem, 6vw, 3.5rem);   /* grows with the screen, never smaller than 2.25rem */
     --leading-body: 1.6;
-    --leading-heading: 1.2;
+    --leading-heading: 1.1;
 
     /* Layout */
     --page-width: 64rem;
 
     /* existing tokens */
     --font-stack: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-serif: 'Lora', Georgia, serif;
-    --radius-md: 8px;
+    --font-display: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;   /* cinematic headings */
+    --radius-md: 4px;                /* squarer corners read as comic panels */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -75,6 +82,9 @@ body.theme-dark {
     --color-accent: #ffc83d;
     --color-accent-strong: #ffe08a;
     --color-danger: #ff7a6e;
+    --color-ink: #000000;
+    --color-flash: #3d3212;
+    --header-bg: linear-gradient(120deg, #05030d 0%, #1d1146 60%, #3a1f8f 100%);
     --color-vanguard: #8fb3ff;
     --color-duelist: #ff8f85;
     --color-strategist: #74d993;
@@ -84,7 +94,7 @@ body.theme-dark {
 /* ==========================
    3. BASE ELEMENT STYLES
    ========================== */
-   
+
    body {
     font-family: var(--font-stack);
     background-color: var(--color-bg);
@@ -97,9 +107,19 @@ body.theme-dark {
    h2 { font-size: var(--text-h2); line-height: var(--leading-heading); }
    h3 { font-size: var(--text-h3); line-height: var(--leading-heading); }
 
-   h1, h2, h3 { font-family: var(--font-serif);
+   h1, h2, h3 { font-family: var(--font-display);
+      font-weight: 400;              /* Bebas Neue only comes in one weight */
+      letter-spacing: 0.04em;
       line-height: var(--leading-heading);
       margin-bottom: var(--space-sm); }
+
+   /* Gold underline under section headings, like a comic caption bar */
+   h2 {
+      display: inline-block;
+      padding-bottom: 2px;
+      border-bottom: 4px solid var(--color-highlight);
+      margin-bottom: var(--space-md);
+   }
 
    p { margin-bottom: var(--space-md); }
    p:last-child { margin-bottom: 0; }
@@ -119,38 +139,59 @@ body.theme-dark {
    (CSS variables cannot be used inside @media conditions,
     so breakpoints are documented here instead of tokenized.)
    ========================== */
-   
+
    body {
     max-width: var(--page-width);
     margin: 0 auto;
     padding: var(--space-lg) var(--space-md);
    }
 
+   /* The header is the "title card": a dark gradient with halftone dots in both modes */
    header {
+      position: relative;            /* lets the sheen in section 13 sit on top */
+      overflow: hidden;              /* keeps the sheen inside the header */
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: var(--space-md);
       padding: var(--space-lg);
-      background-color: var(--color-surface-alt);
-      border-bottom: 4px solid var(--color-highlight);
+      background:
+          radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.6px) 0 0 / 10px 10px,
+          var(--header-bg);
+      color: var(--color-on-header);
+      border: 2px solid var(--color-ink);
+      border-bottom: 6px solid var(--color-highlight);
       border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
+      box-shadow: 6px 6px 0 var(--color-ink);
+      margin-bottom: var(--space-xl);
    }
-   
+
    section { margin-bottom: var(--space-xl); }
 
 /* ==========================
-   5. HEADER 
+   5. HEADER
    ========================== */
 .header-text { flex: 1; min-width: 16rem; }
+
+.header-text p { color: var(--color-on-header-muted); }
+
+/* The theme button sits on the dark header, so it is always light-on-dark */
+header .btn-secondary {
+    color: var(--color-on-header);
+    border-color: var(--color-on-header);
+}
+header .btn-secondary:hover { border-color: var(--color-highlight); }
+
+/* Purple focus ring would vanish on the purple header, so it turns gold here */
+header button:focus-visible { outline-color: var(--color-highlight); }
 
 /* Skip link (Lab 20): hidden above the page until a keyboard user tabs to it */
 .skip-link {
     position: absolute;
-    top: -40px;
+    top: -60px;                      /* -40px left a sliver showing at the top corner */
     left: 0;
+    z-index: 200;                   /* stays above the intro if someone tabs early */
     background: var(--color-accent);
     color: var(--color-surface);
     padding: 8px 16px;
@@ -160,12 +201,15 @@ body.theme-dark {
 /* ==========================
    6. SECTIONS
    ========================== */
+/* Every section is a comic panel: ink outline plus a hard offset shadow.
+   All text sits on these solid panels, so the moving background never
+   lowers text contrast. */
 .panel {
     padding: var(--space-lg);
     background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-ink);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 6px 6px 0 var(--color-accent);
 }
 
 /* ==========================
@@ -216,20 +260,39 @@ fieldset {
 }
 
 legend {
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    letter-spacing: 0.06em;
     margin-bottom: var(--space-sm);
 }
-   
+
 /* ==========================
    8. BUTTONS
    ========================== */
-
+/* Comic buttons: ink outline and a hard shadow that "presses" when clicked */
 button {
     font: inherit;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     padding: var(--space-sm) var(--space-lg);
-    border: none;
+    border: 2px solid var(--color-ink);
     border-radius: var(--radius-md);
+    box-shadow: 3px 3px 0 var(--color-ink);
     cursor: pointer;
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease,
+                transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* :not(:disabled) so a disabled button doesn't pretend it can be pressed */
+button:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+button:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
 }
 
 button:focus-visible {
@@ -244,12 +307,12 @@ button:focus-visible {
 
 .btn-primary:hover {
     background-color: var(--color-accent-strong);
-}   
+}
 
 .btn-secondary {
     background-color: transparent;
     color: var(--color-text);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
 }
 
 .btn-secondary:hover {
@@ -293,13 +356,15 @@ button:disabled {
     padding: var(--space-lg) 0;
 }
 
+/* When JS clears the message, collapse it so there's no blank gap above the table */
+.empty-message:empty { display: none; }
+
 /* The wrapper scrolls sideways on a phone so the page itself never does */
 .table-wrapper {
     overflow-x: auto;
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-ink);
     border-radius: var(--radius-md);
     background-color: var(--color-surface);
-    box-shadow: var(--shadow-sm);
 }
 
 .match-table {
@@ -322,9 +387,14 @@ button:disabled {
     white-space: nowrap;
 }
 
+/* Header row is a solid accent strip (same color pair as .btn-primary) */
 .match-table th {
-    background-color: var(--color-surface-alt);
+    background-color: var(--color-accent);
+    color: var(--color-surface);
     font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 /* Every other row gets a tint so long histories stay readable */
@@ -332,13 +402,20 @@ button:disabled {
     background-color: var(--color-surface-alt);
 }
 
+/* Hovering a row lights it up so your eye can follow it across 11 columns */
+.match-table tbody tr:hover {
+    background-color: var(--color-flash);
+}
+
 /* Role badge (same idea as Project 2's category badges) */
 .role-badge {
     display: inline-block;
     padding: 2px var(--space-sm);
     border-radius: var(--radius-md);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     background-color: var(--color-accent);
     color: var(--color-surface);
 }
@@ -349,7 +426,8 @@ button:disabled {
 /* Delete button inside a table row: smaller so the row stays compact */
 .match-table .btn-danger {
     padding: 2px var(--space-sm);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
+    box-shadow: 2px 2px 0 var(--color-ink);
 }
 
 /* Keyboard users can tab to the table and scroll it with arrow keys */
@@ -371,8 +449,9 @@ button:disabled {
 /* ==========================
    11. FOOTER
    ========================== */
+/* The footer sits on the moving background, so it uses full-strength text color */
 footer {
-    color: var(--color-muted);
+    color: var(--color-text);
     font-size: 0.875rem;
     text-align: center;
     padding: var(--space-lg) 0;
@@ -401,9 +480,255 @@ footer {
 }
 
 /* ==========================
-   13. REDUCED MOTION
+   13. CINEMATIC EFFECTS
+   Everything that moves lives here, so deleting this section
+   returns the site to a still (but still themed) page.
+     13a. Smooth theme fade
+     13b. Living background
+     13c. Header sheen
+     13d. Intro: comic panels flash, then the title card lands
+     13e. Theme wipe
+     13f. New-row flash
+   ========================== */
+
+/* 13a. SMOOTH THEME FADE
+   When body.theme-dark is added or removed, these colors fade over 0.5s
+   instead of snapping. (Buttons have their own transition in section 8.) */
+body,
+.panel,
+.table-wrapper,
+.match-table th,
+.match-table td,
+.match-table tr,
+input,
+select,
+.role-badge,
+footer {
+    transition: background-color 0.5s ease, color 0.5s ease,
+                border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* 13b. LIVING BACKGROUND
+   Two fixed layers behind the page (z-index: -1):
+   ::before = soft colored glows that slowly drift
+   ::after  = a halftone dot pattern, like printed comics
+   The glows are see-through, so they sit on top of whichever page color
+   the theme sets. That is why the background fades smoothly between modes. */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+body::before {
+    background:
+        radial-gradient(circle at 15% 20%, rgba(90, 47, 194, 0.22), transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(242, 183, 5, 0.18), transparent 35%),
+        radial-gradient(circle at 75% 85%, rgba(31, 79, 191, 0.18), transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(179, 38, 30, 0.12), transparent 35%);
+    background-size: 160% 160%;
+    animation: drift 30s ease-in-out infinite alternate;
+}
+
+body::after {
+    background: radial-gradient(rgba(110, 100, 160, 0.16) 1px, transparent 1.6px) 0 0 / 16px 16px;
+}
+
+@keyframes drift {
+    from { background-position: 0% 0%; }
+    to   { background-position: 100% 100%; }
+}
+
+/* 13c. HEADER SHEEN
+   A streak of light crosses the title card once, right after the intro ends. */
+header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transform: translateX(-150%);    /* parked off the left edge */
+    pointer-events: none;
+    animation: sheen 1.4s ease-in-out 2.6s;
+}
+
+@keyframes sheen {
+    from { transform: translateX(-150%); }
+    to   { transform: translateX(350%); }
+}
+
+/* 13d. INTRO
+   Timeline (about 2.8 seconds):
+     0.0s – 0.8s  six comic panels flicker on, out of order
+     0.0s – 2.2s  the panel wall slowly pulls back (zoom out)
+     0.9s – 2.2s  the title card slams in, letters tightening together
+     2.2s – 2.8s  the whole intro fades out and is hidden
+   pointer-events: none means you can click the page even while it plays. */
+.intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background-color: #0b0618;
+    overflow: hidden;
+    pointer-events: none;
+    animation: introOut 0.6s ease-in 2.2s forwards;
+}
+
+@keyframes introOut {
+    to { opacity: 0; visibility: hidden; }
+}
+
+.intro-panels {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+    padding: 6px;
+    animation: pullBack 2.2s ease-out forwards;
+}
+
+@keyframes pullBack {
+    from { transform: scale(1.35) rotate(-2deg); }
+    to   { transform: scale(1) rotate(0deg); }
+}
+
+.intro-panel {
+    border: 3px solid #000000;
+    opacity: 0;
+    /* steps(1) makes hard cuts between keyframes: a flicker, not a fade */
+    animation: panelFlash 1.6s steps(1) forwards;
+}
+
+@keyframes panelFlash {
+    0%   { opacity: 0; }
+    8%   { opacity: 1; }
+    16%  { opacity: 0.2; }
+    24%  { opacity: 1; }
+    100% { opacity: 0.45; }   /* dims so the title card stands out */
+}
+
+/* Each panel is original comic art made from gradients:
+   halftone dots, speed stripes and a burst. The delays are
+   out of order so the panels flash like flipping pages. */
+.intro-panel:nth-child(1) {
+    background: radial-gradient(circle, #8fb3ff 22%, transparent 24%) 0 0 / 18px 18px, #1f4fbf;
+    animation-delay: 0s;
+}
+.intro-panel:nth-child(2) {
+    background: repeating-linear-gradient(115deg, #b3261e 0 14px, #e04a3f 14px 28px);
+    animation-delay: 0.3s;
+}
+.intro-panel:nth-child(3) {
+    background: repeating-conic-gradient(from 0deg, #f2b705 0deg 10deg, #ffd85c 10deg 20deg);
+    animation-delay: 0.1s;
+}
+.intro-panel:nth-child(4) {
+    background: radial-gradient(circle, #74d993 22%, transparent 24%) 0 0 / 14px 14px, #1b6e36;
+    animation-delay: 0.45s;
+}
+.intro-panel:nth-child(5) {
+    background: repeating-linear-gradient(45deg, #3a1f8f 0 10px, #26135f 10px 20px);
+    animation-delay: 0.2s;
+}
+.intro-panel:nth-child(6) {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 20%, transparent 22%) 0 0 / 10px 10px, #5a2fc2;
+    animation-delay: 0.6s;
+}
+
+/* The title card: purple block, gold frame, hard black shadow */
+.intro-title {
+    position: relative;              /* sits above the panel wall */
+    padding: 0.15em 0.5em 0.1em;
+    background-color: #3a1f8f;
+    border: 4px solid #f2b705;
+    box-shadow: 8px 8px 0 #000000;
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 10vw, 7rem);
+    line-height: 1;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0;
+    animation: titleSlam 1.3s ease-out 0.9s forwards;
+}
+
+.intro-title span {
+    display: block;
+    font-family: var(--font-stack);
+    font-size: clamp(0.65rem, 2vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    color: #f2b705;
+}
+
+@keyframes titleSlam {
+    0%   { opacity: 0; transform: scale(1.8); letter-spacing: 0.5em; }
+    40%  { opacity: 1; }
+    100% { opacity: 1; transform: scale(1); letter-spacing: 0.05em; }
+}
+
+/* 13e. THEME WIPE
+   A slanted gold comic panel parked off-screen to the left.
+   JavaScript adds .is-wiping when the theme button is clicked;
+   it sweeps across, and JS removes the class on "animationend". */
+.theme-wipe {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 60vw;
+    z-index: 90;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.22) 22%, transparent 24%) 0 0 / 12px 12px, #f2b705;
+    border-left: 8px solid #3a1f8f;
+    border-right: 8px solid #3a1f8f;
+    transform: translateX(-130vw) skewX(-12deg);
+}
+
+.theme-wipe.is-wiping {
+    animation: wipe 0.7s ease-in-out;
+}
+
+@keyframes wipe {
+    from { transform: translateX(-100vw) skewX(-12deg); }
+    to   { transform: translateX(140vw) skewX(-12deg); }
+}
+
+/* 13f. NEW-ROW FLASH
+   JavaScript adds .row-new to the first row after "Add Match".
+   It starts highlighted and fades back to its normal color. */
+.match-table tbody tr.row-new {
+    animation: rowFlash 1.5s ease-out;
+}
+
+@keyframes rowFlash {
+    from { background-color: var(--color-flash); }
+}
+
+/* ==========================
+   14. REDUCED MOTION
    (Kept last so it overrides any animation added above later.)
+   !important is needed because class rules like .intro-panel are more
+   specific than *, so without it the animations would still play.
+   ::before and ::after are listed because * alone does not select them.
    ========================== */
 @media (prefers-reduced-motion: reduce) {
-    * { transition: none; animation: none; }
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    /* With animation off the intro would never fade, so remove it entirely */
+    .intro { display: none; }
 }

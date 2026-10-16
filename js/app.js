@@ -13,6 +13,8 @@ const roleFilter = document.getElementById("role-filter");
 const themeToggle = document.getElementById("theme-toggle");
 const exportBtn = document.getElementById("export-btn");
 const themeWipe = document.getElementById("theme-wipe");
+const importBtn = document.getElementById("import-btn");
+const importFile = document.getElementById("import-file");
 
 // The <option> values are lowercase; this turns them into display names.
 const roleNames = {
@@ -29,6 +31,12 @@ searchInput.addEventListener("input", searchMatches);
 roleFilter.addEventListener("change", searchMatches);
 themeToggle.addEventListener("click", toggleTheme);
 exportBtn.addEventListener("click", exportCSV);
+
+// The Import button "clicks" the hidden file picker; picking a file fires "change".
+importBtn.addEventListener("click", function() {
+    importFile.click();
+});
+importFile.addEventListener("change", importCSV);
 
 // When the theme wipe finishes, remove its class so the next click can play it again.
 themeWipe.addEventListener("animationend", function() {
@@ -316,7 +324,195 @@ function exportCSV() {
 }
 
 // ==========================
-// 9. START UP
+// 9. IMPORT FROM CSV (the input side of my CSV technique)
+// The reverse of section 8: reads a CSV file the user picks,
+// turns each row back into a match object, and adds it to the list.
+// Works with files exported by this tracker, including ones edited
+// and re-saved in Excel or Google Sheets.
+// ==========================
+function importCSV() {
+    const file = importFile.files[0];
+    if (!file) {
+        return;   // the user closed the picker without choosing a file
+    }
+
+    // FileReader reads a file from the user's computer. It is event-based,
+    // like addEventListener: "load" fires once the whole file has been read.
+    const reader = new FileReader();
+
+    reader.addEventListener("load", function() {
+        addImportedMatches(reader.result);   // reader.result is the file's text
+    });
+
+    reader.addEventListener("error", function() {
+        alert("Unable to read that file. Please try again.");
+    });
+
+    reader.readAsText(file);
+
+    // Reset the picker so choosing the same file again still fires "change".
+    importFile.value = "";
+}
+
+function addImportedMatches(text) {
+    // Excel sometimes adds an invisible marker (a "BOM") to the very start of a file.
+    if (text.startsWith("﻿")) {
+        text = text.slice(1);
+    }
+
+    const rows = parseCSV(text);
+
+    // Row 1 must be our header row, or this isn't a match file.
+    if (rows.length === 0 || rows[0][0].trim().toLowerCase() !== "date") {
+        alert("This file doesn't look like a match export. The first column should be \"Date\".");
+        return;
+    }
+
+    // Every match already saved gets a "key" so duplicates can be spotted.
+    const existingKeys = matches.map(matchKey);
+
+    let added = 0;
+    let duplicates = 0;
+    let invalid = 0;
+
+    // Start at 1 to skip the header row.
+    for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i];
+
+        // A blank line (often the last line of a file) is skipped silently.
+        if (cells.length === 1 && cells[0].trim() === "") {
+            continue;
+        }
+
+        const match = rowToMatch(cells);
+        if (match === null) {
+            invalid++;
+            continue;
+        }
+
+        const key = matchKey(match);
+        if (existingKeys.includes(key)) {
+            duplicates++;      // already in the list, so don't add it twice
+            continue;
+        }
+
+        matches.push(match);   // push adds to the END, after the matches you already had
+        existingKeys.push(key);
+        added++;
+    }
+
+    saveMatches();
+    displayMatches();
+
+    alert(`Imported ${added} match${added === 1 ? "" : "es"}.` +
+          (duplicates > 0 ? ` Skipped ${duplicates} already in your list.` : "") +
+          (invalid > 0 ? ` Skipped ${invalid} row${invalid === 1 ? "" : "s"} with missing or invalid stats.` : ""));
+}
+
+// Splits CSV text into rows of cells. It reads one character at a time and
+// remembers whether it is inside quotes, so a comma inside "Cloak, Dagger"
+// stays part of the hero name instead of starting a new column.
+// This undoes exactly what csvCell() does in section 8.
+function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let cell = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (inQuotes) {
+            if (char === '"' && text[i + 1] === '"') {
+                cell += '"';        // "" inside quotes means one real quote mark
+                i++;                // skip the second quote
+            } else if (char === '"') {
+                inQuotes = false;   // closing quote
+            } else {
+                cell += char;       // anything else, even a comma, is part of the cell
+            }
+        } else if (char === '"') {
+            inQuotes = true;        // opening quote
+        } else if (char === ",") {
+            row.push(cell);         // comma outside quotes: the cell is finished
+            cell = "";
+        } else if (char === "\n") {
+            row.push(cell);         // line break: the row is finished
+            rows.push(row);
+            row = [];
+            cell = "";
+        } else if (char !== "\r") { // \r is the other half of Excel's line break; ignore it
+            cell += char;
+        }
+    }
+
+    // The last row may not end with a line break.
+    if (cell !== "" || row.length > 0) {
+        row.push(cell);
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+// Turns one row of cells into a match object, using the same rules as addMatch.
+// Returns null if anything is missing or invalid.
+function rowToMatch(cells) {
+    if (cells.length < 11) {
+        return null;
+    }
+
+    // "Vanguard" in the file becomes "vanguard", the value the app uses.
+    const role = cells[1].trim().toLowerCase();
+    if (!roleNames[role]) {
+        return null;
+    }
+
+    // Remove thousands commas in case a spreadsheet added them (18,400 → 18400).
+    function toNumber(cell, isDecimal) {
+        const clean = cell.replaceAll(",", "").trim();
+        return isDecimal ? parseFloat(clean) : parseInt(clean);
+    }
+
+    const match = {
+        role: role,
+        hero: cells[2].trim(),
+        kills: toNumber(cells[3], false),
+        deaths: toNumber(cells[4], false),
+        assists: toNumber(cells[5], false),
+        finalHits: toNumber(cells[6], false),
+        damageDealt: toNumber(cells[7], false),
+        damageTaken: toNumber(cells[8], false),
+        healing: toNumber(cells[9], false),
+        accuracy: toNumber(cells[10], true),
+        dateAdded: cells[0].trim() || new Date().toLocaleDateString()
+    };
+
+    // Same checks as the form: every stat is a number of 0 or more, accuracy ≤ 100.
+    const stats = [match.kills, match.deaths, match.assists, match.finalHits,
+                   match.damageDealt, match.damageTaken, match.healing, match.accuracy];
+    for (let i = 0; i < stats.length; i++) {
+        if (isNaN(stats[i]) || stats[i] < 0) {
+            return null;
+        }
+    }
+    if (match.accuracy > 100) {
+        return null;
+    }
+
+    return match;
+}
+
+// A match's "fingerprint": all of its values joined into one string.
+// Two matches with the same fingerprint are treated as the same match.
+function matchKey(match) {
+    return [match.dateAdded, match.role, match.hero, match.kills, match.deaths,
+            match.assists, match.finalHits, match.damageDealt, match.damageTaken,
+            match.healing, match.accuracy].join("|");
+}
+
+// ==========================
+// 10. START UP
 // ==========================
 loadTheme();
 loadMatches();

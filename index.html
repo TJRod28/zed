@@ -139,6 +139,10 @@
 
         <div class="clear-all-container">
             <button type="button" id="export-btn" class="btn-primary" disabled>Export to CSV</button>
+            <!-- INPUT: load matches from a CSV file. The real file picker is hidden
+                 because it can't be styled; the Import button opens it for you. -->
+            <button type="button" id="import-btn" class="btn-secondary">Import CSV</button>
+            <input type="file" id="import-file" accept=".csv,text/csv" hidden>
             <button type="button" class="btn-danger" onclick="clearAll()">Clear All Matches</button>
         </div>
 

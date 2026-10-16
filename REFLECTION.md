@@ -17,3 +17,8 @@ This leads into my next point that the CSV is stylized for others to read such a
 Another thing with noting in my reflection is not only Claude helping me generate this development app, but also assisting me in troubleshooting my own work. This style of troubleshooting stems from one prompt where Claude gave me 6 instructions similar to how the labs for this class were set up to test my site.
 
 It had me break my site by enetering wrong variables and searches to see if my error codes appeared and what should work if everything was entered in correctly. It would do this for most prompts before helping me with my next question on my Java or CSS files.
+
+10/16/26 Update
+Originally, I thought I was finished with this project and was originally content with the finished product. I was ready to focus on my other major assignments due the same week this final project was due for this 8 week class. However, upon seeing my peer's websites and how different they were with fonts and colors and various flashes. 
+
+This made me begin to experience self-doubt at my then finished project and wanted to match everyone else with fancy styles and to even go beyond what they created. Thus, I went back to Claude to create a comic book style background, font, and MCU style introduction to the website. Now the last thing to do to fully complete this project is to add it to my project 1 portfolio and resize the images. 

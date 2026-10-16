@@ -236,3 +236,112 @@ Click Export and open the downloaded file in Excel or Google Sheets. You should 
 Use Clear All. The button goes grey again.
 
 For your AI Collaboration Log, this exchange works well as your "teach me a concept" conversation: you asked why <tr> instead of <div> and what the JSON lines meant. Your earlier missing-quote bug from Project 3 is a good example of the kind of thing to log as a debugging session when one comes up in Zed."
+
+TJ: "Ok before this is due I want to do something cool with the style. Can we make the style and ui marvel themed? You know how the MCU has the red comic panel logo flashing through and that cool cinematic style? Can we create something like that? but for the ui and different colors that also transitions between light mode and dark mode. This is really to make the site more alive and not so static or void of background colors. Does all this make sense? I'm going to share my three files so when we change things I won't lose my updated features I did myself."
+
+Claude: "Yes, that makes sense. I’ll add a comic-panel flip intro (original art made in CSS, with your site’s own title card instead of the actual Marvel Studios logo), a slowly moving background, comic-style panels, and an animated wipe when you switch themes. All your updated text and features stay the same.
+
+Your site now has a cinematic comic-book look. I checked it in a browser: light mode, dark mode and phone width all render, the page doesn’t scroll sideways on a phone, there are no errors, and all three test matches (Magneto, Luna Snow, Groot) went in, showed up and flashed correctly.
+
+What you’ll see
+
+Intro (about 2.8 seconds): six comic panels flicker on out of order while the camera pulls back. Then a purple-and-gold “Stats Tracker” title card slams in, its letters tightening together, and the whole thing fades out. You can still click the page while it plays.
+Living background: soft purple, gold, blue and red glows drift slowly behind a printed-comic dot pattern. The glows are see-through, so they fade along with the page color when you switch modes.
+Comic panels: every section is now a panel with an ink outline and a hard drop shadow. The shadow is purple in light mode and gold in dark mode. All text sits on these solid panels, so your contrast checks still hold.
+Theme switch: a slanted gold panel sweeps across the screen while the colors fade underneath.
+Smaller touches: headings use Bebas Neue, the header shines once after the intro, buttons press in when clicked, table rows highlight on hover, and a new match flashes when you add it.
+
+I didn’t copy the actual Marvel Studios logo. It’s trademarked, so the intro uses the same panel-flip style with original CSS art and your site’s own title card. That also makes it more clearly your design.
+
+What changed in your code
+
+HTML: I added the intro and theme-wipe blocks at the top, and gave the search and history sections the panel class. Your header text and footer are untouched.
+JS: four small additions. Section 1 grabs the theme-wipe element. Section 2 removes the wipe’s class when its animation ends so it can play again. Section 3 flashes the newest row. Section 7 starts the wipe when you click the theme button.
+CSS: sections 1–12 keep their labels. All the motion lives in a new section 13, so delete it and the page goes back to still. Reduced motion is now section 14 so it stays last.
+Renamed font token: --font-serif is now --font-display, since Bebas Neue isn’t a serif font.
+
+Bug fixes
+
+Reduced motion was being ignored. Your old rule used * without !important, so class rules like .intro-panel beat it and animations still played. It also missed ::before and ::after, which * doesn’t select. The new version covers both and hides the intro completely when reduced motion is on.
+Skip link: at top: -40px a sliver of it showed in the top-left corner, so it now sits at -60px.
+Empty gap: the empty-message paragraph left a blank space above the table even when it had no text. It now collapses when empty.
+
+The screenshots I checked used a stand-in font because the preview can’t load Google Fonts. On your machine or GitHub Pages, the headings will show in the narrower Bebas Neue. Right now the intro plays on every page load; if that gets old while you’re testing, I can make it play only once per visit."
+
+TJ: "Ok so 2 things. First explain to me all the changes made in terms for me to understand and second, I noticed when I exported the CSV file after these new updates the date shows up as ##### is this because I exported the file while it is in a live server and technically not "official" due to not being pushed to the actual live site? Or is there actually something major happening behind the scenes to fix? Because before this update and on the live site that does not have this update yet the date comes out fine."
+
+Claude: "Part 1: The ##### in your CSV
+
+This one isn’t your code, the live server, or the restyle. It’s Excel saying the column is too narrow to show the date.
+
+When Excel sees 10/15/2026 in a CSV, it recognizes it as a date. A date it can’t fit in the column shows as ##### rather than being cut off, so you never see half a date. Your data is all there.
+
+Why it showed up now and not before: I didn’t touch the CSV code (Section 8) in this update. The difference is the dates. Your older matches had one-digit days like 10/7/2026, which is 9 characters and squeaks into Excel’s default column width. Matches logged on the 15th are 10/15/2026, which is 10 characters and doesn’t fit. If you export from the live site today, you’ll get ##### there too.
+
+To check:
+
+Double-click the line between the A and B column letters in Excel, and the column widens to fit the dates.
+Or click a ##### cell, and the formula bar at the top shows the real date.
+Google Sheets doesn’t do this; it just shows the date.
+
+So nothing needs fixing in the code. If you want, it’s a good debugging story for your AI log: it looked like a bug from the update, but the actual cause was the data (two-digit days) meeting a spreadsheet display rule.
+
+Part 2: What changed, in plain terms
+
+The big idea first: nothing about how the tracker works changed. Logging, saving, search, filter, delete, Clear All and CSV export are all the same code. Everything new is decoration added on top.
+
+index.html: 3 changes
+The intro block. I added a <div class="intro"> with six empty <span>s (the comic panels) and a <p> (the title card). The spans are empty on purpose because CSS paints the panel art onto them. aria-hidden="true" tells screen readers to skip it, since it’s only decoration.
+The theme wipe. I added one empty <div id="theme-wipe">. It’s the gold slanted panel that sweeps across when you switch themes. It sits off-screen to the left until it’s needed.
+Two more panels. The search section and the history section now have class="panel", the same class your “Log a Match” section already used. That puts all your text on a solid box, so the moving background never sits behind words and hurts readability.
+app.js: 4 small additions
+Section 1: const themeWipe = document.getElementById("theme-wipe"); grabs the wipe element, the same way you grab every other element.
+Section 2: an animationend listener. When the wipe finishes sweeping, it removes the is-wiping class. Without this, the class would stay on after the first click and the animation would never play again. Removing it “resets” the wipe for next time.
+Section 3: after a match is added, matchBody.querySelector("tr") finds the first row. That’s always your newest match, because of unshift. Adding row-new to it makes CSS flash that row.
+Section 7: themeWipe.classList.add("is-wiping") is the first line of toggleTheme, so clicking the button starts the sweep.
+
+So JS’s only new job is adding and removing classes. CSS does all the actual animating. That’s the same idea as your dark mode: JS flips a class, and CSS reacts.
+
+styles.css, sections 1–12: restyling
+Tokens (section 2): new colors:
+--color-ink is the dark “comic ink” used for outlines and shadows.
+--color-flash is the row-highlight color.
+--header-bg is the header’s gradient.
+Each one also gets a dark-mode value, following the same Lab 19 pattern you already use. I also renamed --font-serif to --font-display, because the new heading font, Bebas Neue, isn’t a serif. Corners went from 8px to 4px, because square corners look more like comic panels.
+Headings (section 3): Bebas Neue is the tall, narrow movie-poster font. The h2s get a gold underline bar.
+Header (sections 4–5): it’s now a dark purple “title card” in both modes, with white text, a dot pattern, and a hard black shadow. Because it’s always dark, I made the theme button white, and its focus ring gold, so they don’t disappear against the purple.
+Panels (section 6): an ink outline plus a hard shadow: 6px 6px 0 means 6px right, 6px down, and 0 blur, which creates the flat, printed-comic look. The shadow is purple in light mode and gold in dark mode.
+Buttons (section 8): uppercase, outlined, with their own hard shadow. On hover they lift slightly, and on click they shift down-right while the shadow shrinks, so they look physically pressed. :not(:disabled) stops a disabled Export button from pretending to press.
+Table (section 10): the header row is a solid color strip, and rows highlight when you hover so your eye can follow one match across 11 columns.
+Footer (section 11): it now uses full-strength text color, since it sits on the background rather than a panel.
+styles.css, section 13: everything that moves
+
+The useful thing to know for your reflection is that if you delete section 13, the site goes back to a still page that keeps the new colors. All motion lives in one place.
+
+13a, Smooth theme fade: a transition on colors means that when dark mode flips the tokens, colors fade over 0.5 seconds instead of snapping.
+13b, Living background: two invisible layers stuck behind the whole page.
+::before holds soft, see-through color glows that slowly drift over 30 seconds.
+::after is a pattern of tiny dots, like printed comics.
+Because the glows are see-through, they sit on top of whatever background color the theme sets. That’s why the background fades nicely between modes.
+13c, Header sheen: a streak of light crosses the header once, right after the intro.
+13d, Intro: a timed sequence of @keyframes animations, where each piece waits its turn using animation-delay:
+The panels flicker on in a scrambled order. steps(1) makes hard cuts instead of smooth fades, which is the “flipping pages” feel.
+The panel wall zooms out slightly, like a camera pulling back.
+The title card slams in, its letters squeezing together.
+The whole intro fades out, and visibility: hidden takes it away.
+pointer-events: none means clicks pass right through it, so it never blocks the page.
+13e, Theme wipe: the gold panel is parked off-screen. The is-wiping class (added by JS) plays an animation that slides it across.
+13f, New-row flash: the row-new class (added by JS) makes the row start highlighted and fade back to normal.
+styles.css, section 14: reduced motion (now actually works)
+
+This is a real accessibility fix, worth mentioning in your reflection. Your old rule was * { animation: none; }. It had two problems:
+
+Specificity: * is the weakest selector there is, so any class rule like .intro-panel beat it, and animations still played. !important makes the “no motion” rule win.
+Pseudo-elements: * doesn’t select ::before and ::after, so the background drift and header sheen were never covered. Now they’re listed.
+
+There’s also a new problem the intro would cause: with animations turned off, the intro would never fade out and would cover the page forever. So reduced-motion users get .intro { display: none; }, meaning no intro at all.
+
+Three small fixes
+Skip link: it moved from -40px to -60px because a sliver of it was peeking out at the top-left corner.
+Intro title size: it’s slightly smaller and set to uppercase, so it fits on screen even before the font loads.
+Empty-message gap: .empty-message:empty { display: none; } removes the blank gap above the table when there’s no message to show."
